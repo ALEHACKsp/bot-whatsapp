@@ -7,8 +7,8 @@ const { helpers } = require('./lib/help');
 const path = require('path');
 require('dotenv/config');
 
-const ytdl = require('ytdl-core');
-const ytsearch = require('youtube-search');
+const search = require("youtube-search");
+const YoutubeMp3Downloader = require("youtube-mp3-downloader");
 
 const http = require('http');
 const https = require('https');
