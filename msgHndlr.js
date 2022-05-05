@@ -326,6 +326,57 @@ module.exports = msgHandler = async (client, message) => {
 		command.replaceAll('*', '');
 		command.replaceAll('`', '');
 		switch (command) {
+			case "!yt":
+		  
+        try {
+			var YD = new YoutubeMp3Downloader({
+				"ffmpegPath": "C:/ffmpeg/bin/ffmpeg",        // FFmpeg binary location
+				"outputPath": "./media/ytDown",    // Output file location (default: the home directory)
+				"youtubeVideoQuality": "highestaudio",  // Desired video quality (default: highestaudio)
+				"queueParallelism": 2,                  // Download parallelism (default: 1)
+				"progressTimeout": 2000,                // Interval in ms for the progress reports (default: 1000)
+				"allowWebm": false                      // Enable download from WebM sources (default: false)
+			});
+          
+          var opts = {
+            maxResults: 1,
+            key: "AIzaSyARsUt7mpnrM__x-uA95qkKAArXop6j2Bo",
+          };
+
+          const pesq = args.slice(2).join(" ");
+          search(pesq, opts, async function (err, results) {
+            if (err) return console.log(err);
+			console.log(results)
+
+			YD.download(results[0].id, results[0].id + '.mp3' );
+			client.reply(from, "Estou procurando o vídeo", id);
+      client.reply(from, `
+      Achei esse vídeo:
+Titulo: ${results[0].title}
+Link:  ${results[0].link}
+Canal: ${results[0].channelTitle}
+já to baixando...`, id);
+
+			YD.on("finished", function(err, data) {
+				client.sendPtt(from, `./media/ytDown/${results[0].id}.mp3`, id);
+				console.log(JSON.stringify(data));
+			});
+
+			YD.on("error", function(error) {
+				client.reply(from, `Deu merda veii, mostra isso para o Kauã:\n ${error}`, id);
+				console.log(error);
+			});
+			
+			console.log("Enviando");
+			});
+          
+
+        } catch (e) {
+          console.log(e);
+          client.reply(from, `Deu merda veii, mostra isso para o Kauã:\n ${e}`, id);
+        }
+		break;
+
 			case '!dialogflow':
 				if (args.length === 1) return client.reply(from, 'Escolha habilitar ou desabilitar!', id);
 				if (!isGroupAdmins) return client.reply(from, 'Este comando só pode ser usado por administradores de grupo', id);
@@ -341,7 +392,7 @@ module.exports = msgHandler = async (client, message) => {
 				break;
 
 			case '!cpf':
-				if (chat.id == '555591441492-1588522560@g.us') return client.reply(from, 'Consultas não são permitidas nesse grupo. Tente no PV', id);
+				if (chat.id == '555591441492-1588522560@g.us' || chat.id == '120363042544006292@g.us') return client.reply(from, 'Consultas não são permitidas nesse grupo. Tente no PV', id);
 				if (args.length === 1) return client.reply(from, 'Ainda não adivinho coisas... preciso saber o CPF também!', id);
 				
 				let cpf = args[1].match(/\d/g);
@@ -392,7 +443,7 @@ Consultado por: ${pushname}`;
 				break;
 
 			case '!nome':
-				if (chat.id == '555591441492-1588522560@g.us') return client.reply(from, 'Consultas não são permitidas nesse grupo. Tente no PV', id);
+				if (chat.id == '555591441492-1588522560@g.us' || chat.id == '120363042544006292@g.us') return client.reply(from, 'Consultas não são permitidas nesse grupo. Tente no PV', id);
 				if (args.length === 1) return client.reply(from, 'Ainda não adivinho coisas... preciso saber o nome também', id);
 
 				if (typeof args[1] == 'undefined') {
@@ -441,7 +492,7 @@ Consultado por: ${pushname}`;
 			
 			case '!telefone':
 			case '!numero':
-				if (chat.id == '555591441492-1588522560@g.us') return client.reply(from, 'Consultas não são permitidas nesse grupo. Tente no PV', id);
+				if (chat.id == '555591441492-1588522560@g.us' || chat.id == '120363042544006292@g.us') return client.reply(from, 'Consultas não são permitidas nesse grupo. Tente no PV', id);
 				if (args.length === 1) return client.reply(from, 'Ainda não adivinho coisas... preciso saber o telefone também', id);
 				let numero;
 				if (args[1].includes('@')) {
@@ -974,7 +1025,7 @@ Consultado por: ${pushname}`;
 				if (!quotedMsg) return client.reply(from, 'Como vou saber o que devo apagar? Mencione uma mensagem minha', id);
 				const quotedMsgText = quotedMsg.body;
 				const quotedMsgIsConsulta = quotedMsgText.includes('=== CONSULTA REALIZADA ===');
-				if (!quotedMsgIsConsulta && !isGroupAdmins) return client.reply(from, 'Este recurso só pode ser usado por administradores de grupo', id);
+				if (!quotedMsgIsConsulta) return client.reply(from, 'Responda a uma consulta', id);
 
 				if (isGroupAdmins) {
 					await client.deleteMessage(quotedMsgObj.chatId, quotedMsgObj.id, false);
